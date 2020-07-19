@@ -1,28 +1,49 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-row v-if="isLoggedIn" no-gutters class="pa-2">
+      <v-col md="2">
+        <SideNav fromParent="accessToken" v-on:menuChanged="menuChanged"/>
+      </v-col>
+      <VLine/>
+    </v-row>
+    <Auth v-on:signedIn="signIn" v-else/>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import SideNav from './components/SideNav';
+import VLine from './components/VLine';
+import Auth from './components/auth/Auth';
+// import { apiHelper } from './utilities/ApiHelper'
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+  components: {
+    SideNav,
+    VLine, 
+    Auth,
+  },
+
+  data: () => ({
+    isLoggedIn: false,
+    accessToken: '',
+    profile: {}
+  }),
+  methods: {
+    signIn: function (accessToken, profile) {
+      this.isLoggedIn = true
+      this.accessToken = accessToken
+      this.profile = profile
+    },
+    menuChanged: function (menuIndex) {
+      console.log(menuIndex)
+      switch(menuIndex) {
+        case 1:
+          // apiHelper.get('custom URL')
+          break
+      }
+    }
+  }
+};
+</script>
