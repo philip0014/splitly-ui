@@ -3,17 +3,18 @@
         <div class="auth-content">
             <div class="d-flex signin-container font-montserrat">
                 <div class="left-container d-flex align-center">
-                    <div class="left-content px-4 text-center">
-                        <h2>Welcome Back</h2>
-                        <div class="mt-8">
-                            To keep connected, please login with your personal info
-                        </div>
-                    </div>
-                </div>
-                <div class="right-container d-flex align-center">
-                    <div class="right-content">
-                        <h2 class="title-text text-center">Sign In to Splitly</h2>
+                    <div class="left-content">
+                        <h2 class="title-text text-center">Register to Splitly</h2>
                         <div class="mt-12">
+                            <div>
+                                <v-text-field
+                                    v-model="username"
+                                    label="Username"
+                                    :rules="usernameRules"
+                                    solo
+                                    prepend-inner-icon="mdi-account-circle-outline">
+                                </v-text-field>
+                            </div>
                             <div>
                                 <v-text-field
                                     v-model="email"
@@ -40,23 +41,20 @@
                                     color="primary"
                                     width="100%"
                                     @click="onSubmit()">
-                                    Sign In
+                                    Register
                                 </v-btn>
                             </div>
-                            <div class="mt-4 text-center">
-                                <small>or sign in with another method</small>
-                            </div>
-                            <div class="mt-4 text-center">
-                                <GoogleLogin class="v-btn v-btn--contained theme--dark v-size--default google-red"
-                                    :params="googleParams"
-                                    :onSuccess="onSuccess"
-                                    :onFailure="onFailure">
-                                    <v-icon color="#ffffff" left>mdi-google</v-icon> Google
-                                </GoogleLogin>
-                            </div>
                             <div class="mt-8">
-                                <small>Don't have an account yet? <router-link to="/register">Register here</router-link></small>
+                                <small>Already have an account? <router-link to="/sign-in">Sign in here</router-link></small>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right-container d-flex align-center">
+                    <div class="right-content px-4 text-center">
+                        <h2>Hello Friend</h2>
+                        <div class="mt-8">
+                            To starts your journey with us, please enter your personal details
                         </div>
                     </div>
                 </div>
@@ -66,28 +64,25 @@
 </template>
 
 <script>
-import GoogleLogin from 'vue-google-login'
 import { apiHelper } from '../../utilities/ApiHelper'
 
 export default {
-    components: {
-        GoogleLogin
-    },
     props: [],
     data: () => ({
+        username: '',
         email: '',
         password: '',
         isPasswordShown: false,
+        usernameRules: [
+            value => !!value || 'Required',
+        ],
         emailRules: [
             value => !!value || 'Required',
         ],
         passwordRules: [
             value => !!value || 'Required',
             value => (value && value.length >= 8) || 'Min 8 characters',
-        ],
-        googleParams: {
-            client_id: '755421501309-erl8sa383vvvl0o17ds33veen6lkpd64.apps.googleusercontent.com'
-        }
+        ]
     }),
     mounted: function () {
         this.accessToken = this.$cookie.get('accessToken')
@@ -105,21 +100,13 @@ export default {
         fallback: function (error) {
             console.log(error)
         },
-        onSuccess: function (response) {
-            const data = {
-                userIdToken: response.wc.id_token
-            }
-            apiHelper.post('/api/auth/google', null, data, this.callback, this.fallback)
-        },
-        onFailure: function (error) {
-            console.log(error)
-        },
         onSubmit: function () {
             const data = {
+                username: this.username,
                 email: this.email,
                 password: this.password
             }
-            apiHelper.post('/api/auth/signIn', null, data, this.callback, this.fallback)
+            apiHelper.post('/api/auth/register', null, data, this.callback, this.fallback)
         }
     }
 }
@@ -146,24 +133,14 @@ export default {
 
 .signin-container
     height: 100%
-
-    .left-container
-        background-image: linear-gradient(to bottom right, #24a19c, #6ebfb5)
-        width: 35%
-        height: 100%
-        border-radius: 10px 0px 0px 10px
-        color: #ffffff
-
-        .left-content
-            width: 100%
     
-    .right-container
+    .left-container
         width: 65%
         height: 100%
         background-color: #ffffff
-        border-radius: 0px 10px 10px 0px
+        border-radius: 10px 0px 0px 10px
 
-        .right-content
+        .left-content
             width: 100%
             padding: 0 80px
 
@@ -177,7 +154,16 @@ export default {
             a:hover
                 text-decoration: none
                 font-weight: bold
-                
+    
+    .right-container
+        background-image: linear-gradient(to bottom left, #24a19c, #6ebfb5)
+        width: 35%
+        height: 100%
+        border-radius: 0px 10px 10px 0px
+        color: #ffffff
+
+        .right-content
+            width: 100%       
 
 .logo-title
     font-size: 18px
