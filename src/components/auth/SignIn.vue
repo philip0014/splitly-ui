@@ -35,6 +35,9 @@
                                     prepend-inner-icon="mdi-lock-outline">
                                 </v-text-field>
                             </div>
+                            <div v-if="isErrorShown" class="text-center error--text">
+                                <small>{{ errorMessage }}</small>
+                            </div>
                             <div class="mt-2">
                                 <v-btn
                                     color="primary"
@@ -78,6 +81,8 @@ export default {
         email: '',
         password: '',
         isPasswordShown: false,
+        isErrorShown: false,
+        errorMessage: '',
         emailRules: [
             value => !!value || 'Required',
         ],
@@ -103,7 +108,8 @@ export default {
             this.$router.push('/')
         },
         fallback: function (error) {
-            console.log(error)
+            this.isErrorShown = true
+            this.errorMessage = error
         },
         onSuccess: function (response) {
             const data = {
