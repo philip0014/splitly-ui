@@ -9,7 +9,8 @@
                 <Bills
                     v-if="isDataReady && activeIndex == 1"
                     :pendingBills="data.pendingBills"
-                    :completeBills="data.completeBills"/>
+                    :completeBills="data.completeBills"
+                    v-on:dataChanged="onDataChanged"/>
             </div>
         </div>
     </v-main>
@@ -42,6 +43,9 @@ export default {
                 this.onBillsOpened()
                 break
             }
+        },
+        onDataChanged: function () {
+            this.menuChanged(this.activeIndex)
         },
         onBillsOpened: function () {
             this.dataReadyCount = 0
