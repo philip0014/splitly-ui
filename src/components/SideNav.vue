@@ -1,27 +1,32 @@
 <template>
-    <v-main class="sidenav-container">
+    <v-main class="sidenav-container pa-4">
         <div class="d-flex justify-start align-center">
-            <v-img src="../assets/favicon-96x96.png"/>
-            <!-- <img src="../assets/favicon-96x96.png" width="75" height="75"> -->
-            <div class="logo-title font-montserrat">Splitly</div>
+            <!-- <v-img src="../assets/favicon-96x96.png" width="75" height="75" position="center"/> -->
+            <img src="../assets/favicon-96x96.png" width="50" height="50">
+            <div class="logo-title font-montserrat ml-4">Splitly</div>
         </div>
-        <div class="pa-4 mt-9">
+        <div class="mt-10">
             <div
                 v-for="item in items"
                 :key="item.id"
                 class="side-nav-item"
                 v-bind:class="(activeIndex === item.id) ? 'nav-item-active' : ''"
                 v-on:click="openMenu(item.id)">
-                <v-icon left>{{ item.icon }}</v-icon> {{ item.title }}
+                <v-icon
+                    left
+                    v-bind:class="(activeIndex === item.id) ? 'secondary--text' : ''">
+                        {{ item.icon }}
+                </v-icon> {{ item.title }}
             </div>
-            {{ fromParent }}
+        </div>
+        <div class="footer text-center">
+            <small>Copyright &copy; {{ new Date().getFullYear() }} Splitly by Philip A</small>
         </div>
     </v-main>
 </template>
 
 <script>
 export default {
-    props: ['fromParent'],
     data: () => ({
         activeIndex: 1,
         items: [
@@ -34,11 +39,21 @@ export default {
     methods: {
         openMenu: function (index) {
             this.activeIndex = index
+            switch (this.activeIndex) {
+                case 4:
+                    this.signOut()
+                    return
+            }
             this.$emit('menuChanged', index)
         },
+        signOut: function () {
+            this.$cookie.delete('accessToken')
+            this.$cookie.delete('profile')
+            this.$router.push('/sign-in')
+        }
     },
-    mounted: (a) => {
-        console.log(a, 'Mounted')
+    mounted: () => {
+
     }
 }
 </script>
@@ -46,17 +61,18 @@ export default {
 <style lang="sass" scoped>
 .sidenav-container
     height: 100%
+    box-shadow: 0px 0px 10px #000000
+    background-color: #ffffff
 
 .logo-title
-    font-weight: bold
     font-size: 22px
+    font-weight: bold
 
 .font-montserrat
     font-family: Montserrat
 
 .side-nav-item
-    padding: 15px 0px
-    color: #a0a2ae
+    padding: 18px 0px
     opacity: 0.7
     transition: opacity 0.15s
     &:hover
@@ -65,5 +81,10 @@ export default {
 
 .nav-item-active
     opacity: 1
-    font-weight: bold
+    font-weight: 500
+
+.footer
+    position: absolute
+    width: 100%
+    bottom: -4px
 </style>

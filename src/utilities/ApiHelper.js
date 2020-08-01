@@ -6,7 +6,6 @@ export const apiHelper = {
                 method: 'GET',
                 headers: headers
             }).then(res => {
-                console.log(res);
                 return res.json();
             }).then(response => {
                 if (response.code === 200) {
