@@ -28,6 +28,16 @@ const router = new Router({
       component: Home
     },
     {
+      path: '/friends',
+      name: 'Friends',
+      component: Home
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Home
+    },
+    {
       path: '/register',
       name: 'Register',
       component: Register

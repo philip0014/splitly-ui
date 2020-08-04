@@ -21,7 +21,9 @@ export const apiHelper = {
         if (headers === null || headers === undefined) {
             headers = {}
         }
-        headers['Content-Type'] = 'application/json'
+        if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
+            headers['Content-Type'] = 'application/json'
+        }
 
         fetch(BASE_URL + url, {
                 method: 'POST',
@@ -43,7 +45,9 @@ export const apiHelper = {
         if (headers === null || headers === undefined) {
             headers = {}
         }
-        headers['Content-Type'] = 'application/json'
+        if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
+            headers['Content-Type'] = 'application/json'
+        }
 
         fetch(BASE_URL + url, {
                 method: 'PUT',

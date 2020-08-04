@@ -1,6 +1,5 @@
 <template>
     <v-main class="home-container">
-        <div class="home-background"></div>
         <div class="home-content">
             <div class="nav-container">
                 <SideNav v-on:menuChanged="menuChanged"/>
@@ -11,6 +10,9 @@
                     :pendingBills="data.pendingBills"
                     :completeBills="data.completeBills"
                     v-on:dataChanged="onDataChanged"/>
+                <Profile
+                    v-if="isDataReady && activeIndex == 3"
+                    v-on:dataChanged="onDataChanged"/>
             </div>
         </div>
     </v-main>
@@ -19,27 +21,37 @@
 <script>
 import SideNav from './SideNav'
 import Bills from './Bills'
+import Profile from './Profile'
 import { apiHelper } from '../utilities/ApiHelper'
 
 export default {
     components: {
         SideNav,
-        Bills
+        Bills,
+        Profile
     },
     data: () => ({
-        activeIndex: 1,
+        nameToIndexMap: {
+            Home: 1,
+            Friends: 2,
+            Profile: 3
+        },
+        activeIndex: 0,
         accessToken: '',
-        isDataReady: false,
+        isDataReady: true,
         dataReadyCount: 0,
         dataNeededCount: 0,
         data: {}
     }),
     methods: {
-        menuChanged: function (index) {
-            this.activeIndex = index
-            this.isDataReady = false
+        setCurrentIndex: function () {
+            this.activeIndex = this.nameToIndexMap[this.$route.name]
+        },
+        menuChanged: function () {
+            this.setCurrentIndex()
             switch (this.activeIndex) {
             case 1:
+                this.isDataReady = false
                 this.onBillsOpened()
                 break
             }
@@ -92,6 +104,7 @@ export default {
 
         const callback = (function (response) {
             console.log(response)
+            this.setCurrentIndex()
             this.menuChanged(this.activeIndex)
         }).bind(this)
 
@@ -110,10 +123,7 @@ export default {
 <style lang="sass" scoped>
 .home-container
     height: 100%
-    background-image: url('../assets/auth-bg.png')
-    background-repeat: no-repeat
-    background-size: auto
-    background-position: center
+    background-color: #fafafa
     overflow: hidden
     .home-content
         height: 100%
@@ -121,13 +131,7 @@ export default {
         .nav-container
             width: 35%
             max-width: 300px
+            z-index: 1
         .main-container
             flex: 1
-
-.home-background
-    width: 100%
-    height: 100%
-    background-color: white
-    opacity: 0.7
-    position: fixed
 </style>

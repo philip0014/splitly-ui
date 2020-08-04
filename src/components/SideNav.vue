@@ -1,5 +1,5 @@
 <template>
-    <v-main class="sidenav-container pa-4">
+    <v-main class="sidenav-container pt-6 pl-6 pr-6 pb-4">
         <div class="d-flex justify-start align-center">
             <!-- <v-img src="../assets/favicon-96x96.png" width="75" height="75" position="center"/> -->
             <img src="../assets/favicon-96x96.png" width="50" height="50">
@@ -28,7 +28,12 @@
 <script>
 export default {
     data: () => ({
-        activeIndex: 1,
+        nameToIndexMap: {
+            Home: 1,
+            Friends: 2,
+            Profile: 3
+        },
+        activeIndex: 0,
         items: [
             {id: 1, title: 'Bills', icon: 'mdi-credit-card'},
             {id: 2, title: 'Friends', icon: 'mdi-account-multiple'},
@@ -40,11 +45,20 @@ export default {
         openMenu: function (index) {
             this.activeIndex = index
             switch (this.activeIndex) {
+                case 1:
+                    this.$router.push('/')
+                    break
+                case 2:
+                    this.$router.push('/friends')
+                    break
+                case 3:
+                    this.$router.push('/profile')
+                    break
                 case 4:
                     this.signOut()
                     return
             }
-            this.$emit('menuChanged', index)
+            this.$emit('menuChanged')
         },
         signOut: function () {
             this.$cookie.delete('accessToken')
@@ -52,8 +66,8 @@ export default {
             this.$router.push('/sign-in')
         }
     },
-    mounted: () => {
-
+    mounted: function () {
+        this.activeIndex = this.nameToIndexMap[this.$route.name]
     }
 }
 </script>
@@ -61,7 +75,7 @@ export default {
 <style lang="sass" scoped>
 .sidenav-container
     height: 100%
-    box-shadow: 0px 0px 10px #000000
+    box-shadow: 0px 0px 10px #a0a2ae
     background-color: #ffffff
 
 .logo-title
