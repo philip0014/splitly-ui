@@ -1,70 +1,31 @@
 const BASE_URL = 'http://localhost:8080'
 
 export const apiHelper = {
-    get: (url, headers, callback, fallback) => {
+    execute: function (method, url, headers, data, callback, fallback) {
         fetch(BASE_URL + url, {
-                method: 'GET',
-                headers: headers
-            }).then(res => {
-                return res.json();
-            }).then(response => {
-                if (response.code === 200) {
-                    callback(response.data);
-                } else {
-                    fallback(response.error)
-                }
-            }).catch((error) => {
-                fallback(error)
-            });
+            method: method,
+            headers: headers,
+            body: data
+        }).then(res => {
+            return res.json();
+        }).then(response => {
+            if (response.code === 200) {
+                callback(response.data);
+            } else {
+                fallback(response.error)
+            }
+        }).catch((error) => {
+            fallback(error)
+        });
     },
-    post: (url, headers, data, callback, fallback) => {
-        if (headers === null || headers === undefined) {
-            headers = {}
-        }
-        if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
-            headers['Content-Type'] = 'application/json'
-            data = JSON.stringify(data)
-        }
-
-        fetch(BASE_URL + url, {
-                method: 'POST',
-                headers: headers,
-                body: data
-            }).then(res => {
-                return res.json();
-            }).then(response => {
-                if (response.code === 200) {
-                    callback(response.data);
-                } else {
-                    fallback(response.error)
-                }
-            }).catch((error) => {
-                fallback(error)
-            });
+    get: function (url, headers, callback, fallback) {
+        this.execute('GET', url, headers, null, callback, fallback)
     },
-    put: (url, headers, data, callback, fallback) => {
-        if (headers === null || headers === undefined) {
-            headers = {}
-        }
-        if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
-            headers['Content-Type'] = 'application/json'
-            data = JSON.stringify(data)
-        }
-
-        fetch(BASE_URL + url, {
-                method: 'PUT',
-                headers: headers,
-                body: data
-            }).then(res => {
-                return res.json();
-            }).then(response => {
-                if (response.code === 200) {
-                    callback(response.data);
-                } else {
-                    fallback(response.error)
-                }
-            }).catch((error) => {
-                fallback(error)
-            });
+    post: function (url, headers, data, callback, fallback) {
+        console.log(this)
+        this.execute('POST', url, headers, data, callback, fallback)
+    },
+    put: function (url, headers, data, callback, fallback) {
+        this.execute('PUT', url, headers, data, callback, fallback)
     },
 }

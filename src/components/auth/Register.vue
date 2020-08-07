@@ -107,12 +107,16 @@ export default {
             this.errorMessage = error
         },
         onSubmit: function () {
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+
             const data = {
                 username: this.username,
                 email: this.email,
                 password: this.password
             }
-            apiHelper.post('/api/auth/register', null, data, this.callback, this.fallback)
+            apiHelper.post('/api/auth/register', headers, JSON.stringify(data), this.callback, this.fallback)
         }
     }
 }

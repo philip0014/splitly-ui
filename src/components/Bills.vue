@@ -353,7 +353,8 @@ export default {
             }
 
             const headers = {
-                'Authorization': 'Bearer ' + this.accessToken
+                'Authorization': 'Bearer ' + this.accessToken,
+                'Content-Type': 'application/json'
             }
 
             const callback = (function (response) {
@@ -367,7 +368,7 @@ export default {
                 this.onCreateClose()
             }).bind(this)
 
-            apiHelper.post('/api/bill/create', headers, data, callback, fallback)
+            apiHelper.post('/api/bill/create', headers, JSON.stringify(data), callback, fallback)
         },
         onPayClose: function () {
             this.payBillDialog = false
@@ -377,7 +378,8 @@ export default {
             this.isLoading = true
 
             const headers = {
-                'Authorization': 'Bearer ' + this.accessToken
+                'Authorization': 'Bearer ' + this.accessToken,
+                'Content-Type': 'application/json'
             }
 
             const callback = (function (response) {
@@ -399,7 +401,7 @@ export default {
                 nominalPaid: this.payValue
             }
 
-            apiHelper.put('/api/bill/pay/' + bill.id, headers, data, callback, fallback)
+            apiHelper.put('/api/bill/pay/' + bill.id, headers, JSON.stringify(data), callback, fallback)
         }
     },
     mounted: function () {

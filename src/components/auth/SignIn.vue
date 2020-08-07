@@ -112,20 +112,28 @@ export default {
             this.errorMessage = error
         },
         onSuccess: function (response) {
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+
             const data = {
                 userIdToken: response.wc.id_token
             }
-            apiHelper.post('/api/auth/google', null, data, this.callback, this.fallback)
+            apiHelper.post('/api/auth/google', headers, JSON.stringify(data), this.callback, this.fallback)
         },
         onFailure: function (error) {
             console.log(error)
         },
         onSubmit: function () {
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+            
             const data = {
                 email: this.email,
                 password: this.password
             }
-            apiHelper.post('/api/auth/signIn', null, data, this.callback, this.fallback)
+            apiHelper.post('/api/auth/signIn', headers, JSON.stringify(data), this.callback, this.fallback)
         }
     }
 }

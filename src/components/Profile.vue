@@ -62,7 +62,7 @@
 </template>
 
 <script>
-// import { apiHelper } from '../utilities/ApiHelper'
+import { apiHelper } from '../utilities/ApiHelper'
 
 export default {
     data: () => ({
@@ -83,7 +83,6 @@ export default {
             }
 
             const callback = (function (response) {
-                console.log(response)
                 this.profile = response
                 this.username = this.profile.username
                 this.$cookie.set('profile', JSON.stringify(response), 1)
@@ -101,22 +100,7 @@ export default {
             data.append("password", this.password)
             data.append("confirmPassword", this.confirmPassword)
 
-            // apiHelper.put('/api/profile', headers, data, callback, fallback)
-            fetch('http://localhost:8080' + '/api/profile', {
-                method: 'PUT',
-                headers: headers,
-                body: data
-            }).then(res => {
-                return res.json();
-            }).then(response => {
-                if (response.code === 200) {
-                    callback(response.data);
-                } else {
-                    fallback(response.error)
-                }
-            }).catch((error) => {
-                fallback(error)
-            });
+            apiHelper.put('/api/profile', headers, data, callback, fallback)
         }
     },
     mounted: function () {
