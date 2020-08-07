@@ -23,12 +23,13 @@ export const apiHelper = {
         }
         if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
             headers['Content-Type'] = 'application/json'
+            data = JSON.stringify(data)
         }
 
         fetch(BASE_URL + url, {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify(data)
+                body: data
             }).then(res => {
                 return res.json();
             }).then(response => {
@@ -47,12 +48,13 @@ export const apiHelper = {
         }
         if (headers['Content-Type'] === null || headers['Content-Type'] === undefined) {
             headers['Content-Type'] = 'application/json'
+            data = JSON.stringify(data)
         }
 
         fetch(BASE_URL + url, {
                 method: 'PUT',
                 headers: headers,
-                body: JSON.stringify(data)
+                body: data
             }).then(res => {
                 return res.json();
             }).then(response => {

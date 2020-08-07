@@ -73,12 +73,50 @@ export default {
         ],
         password: '',
         confirmPassword: '',
-        imageFile: {},
+        imageFile: null,
         profile: {}
     }),
     methods: {
         onUpdateProfile: function () {
-            console.log(this.username, this.password, this.confirmPassword, this.imageFile)
+            const headers = {
+                'Authorization': 'Bearer ' + this.accessToken
+            }
+
+            const callback = (function (response) {
+                console.log(response)
+                this.profile = response
+                this.username = this.profile.username
+                this.$cookie.set('profile', JSON.stringify(response), 1)
+            }).bind(this)
+
+            const fallback = (function (error) {
+                console.log(error)
+            }).bind(this)
+
+            var data = new FormData()
+            data.append("username", this.username)
+            if (this.imageFile !== null && this.imageFile !== undefined) {
+                data.append("image", this.imageFile)
+            }
+            data.append("password", this.password)
+            data.append("confirmPassword", this.confirmPassword)
+
+            // apiHelper.put('/api/profile', headers, data, callback, fallback)
+            fetch('http://localhost:8080' + '/api/profile', {
+                method: 'PUT',
+                headers: headers,
+                body: data
+            }).then(res => {
+                return res.json();
+            }).then(response => {
+                if (response.code === 200) {
+                    callback(response.data);
+                } else {
+                    fallback(response.error)
+                }
+            }).catch((error) => {
+                fallback(error)
+            });
         }
     },
     mounted: function () {
@@ -108,6 +146,8 @@ export default {
         .avatar-container
             position: absolute
             bottom: -80px
+            img
+                object-fit: cover
     .profile-detail
         width: 550px
         margin: 0 auto
