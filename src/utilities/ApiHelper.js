@@ -22,7 +22,6 @@ export const apiHelper = {
         this.execute('GET', url, headers, null, callback, fallback)
     },
     post: function (url, headers, data, callback, fallback) {
-        console.log(this)
         this.execute('POST', url, headers, data, callback, fallback)
     },
     put: function (url, headers, data, callback, fallback) {

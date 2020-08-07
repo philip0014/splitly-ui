@@ -452,12 +452,16 @@ button:focus
     border-radius: 4px
     height: 200px
     overflow-y: auto
+    img
+        object-fit: cover
 
 .select-container
     border: 1px solid #a0a2ae
     border-radius: 4px
     height: 200px
     overflow-y: auto
+    img
+        object-fit: cover
 
 .bills-content
     .content-title
@@ -466,6 +470,8 @@ button:focus
         display: flex
         flex-wrap: wrap
         align-items: center
+        img
+            object-fit: cover
         .bill-card-content
             flex: 1
             display: flex
