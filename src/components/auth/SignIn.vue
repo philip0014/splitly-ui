@@ -18,7 +18,9 @@
                                 <v-text-field
                                     v-model="email"
                                     label="Email"
-                                    :rules="emailRules"
+                                    :error-messages="emailErrors"
+                                    @input="$v.email.$touch()"
+                                    @blur="$v.email.$touch()"
                                     solo
                                     prepend-inner-icon="mdi-email-outline">
                                 </v-text-field>
@@ -29,7 +31,9 @@
                                     label="Password"
                                     :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                                     :type="isPasswordShown ? 'text' : 'password'"
-                                    :rules="passwordRules"
+                                    :error-messages="passwordErrors"
+                                    @input="$v.password.$touch()"
+                                    @blur="$v.password.$touch()"
                                     solo
                                     @click:append="isPasswordShown = !isPasswordShown"
                                     prepend-inner-icon="mdi-lock-outline">
@@ -71,29 +75,48 @@
 <script>
 import GoogleLogin from 'vue-google-login'
 import { apiHelper } from '../../utilities/ApiHelper'
+import { required, minLength, email } from 'vuelidate/lib/validators'
 
 export default {
     components: {
         GoogleLogin
     },
-    props: [],
     data: () => ({
         email: '',
         password: '',
         isPasswordShown: false,
         isErrorShown: false,
         errorMessage: '',
-        emailRules: [
-            value => !!value || 'Required',
-        ],
-        passwordRules: [
-            value => !!value || 'Required',
-            value => (value && value.length >= 8) || 'Min 8 characters',
-        ],
         googleParams: {
-            client_id: '755421501309-erl8sa383vvvl0o17ds33veen6lkpd64.apps.googleusercontent.com'
+            client_id: 'GOOGLE_CLIENT_ID'
         }
     }),
+    validations: {
+        email: {
+            required,
+            email
+        },
+        password: {
+            required,
+            minLength: minLength(6)
+        }
+    },
+    computed: {
+        emailErrors () {
+            const errors = []
+            if (!this.$v.email.$dirty) return errors
+            !this.$v.email.required && errors.push('Email is required')
+            !this.$v.email.email && errors.push('Email is not valid')
+            return errors
+        },
+        passwordErrors () {
+            const errors = []
+            if (!this.$v.password.$dirty) return errors
+            !this.$v.password.required && errors.push('Password is required')
+            !this.$v.password.minLength && errors.push('Password must be at least 6 characters')
+            return errors
+        }
+    },
     mounted: function () {
         this.accessToken = this.$cookie.get('accessToken')
         this.profile = this.$cookie.get('profile')
@@ -125,6 +148,9 @@ export default {
             console.log(error)
         },
         onSubmit: function () {
+            this.$v.$touch()
+            if (this.$v.$invalid) return
+
             const headers = {
                 'Content-Type': 'application/json'
             }

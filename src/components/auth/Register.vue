@@ -10,7 +10,9 @@
                                 <v-text-field
                                     v-model="username"
                                     label="Username"
-                                    :rules="usernameRules"
+                                    :error-messages="usernameErrors"
+                                    @input="$v.username.$touch()"
+                                    @blur="$v.username.$touch()"
                                     solo
                                     prepend-inner-icon="mdi-account-circle-outline">
                                 </v-text-field>
@@ -19,7 +21,9 @@
                                 <v-text-field
                                     v-model="email"
                                     label="Email"
-                                    :rules="emailRules"
+                                    :error-messages="emailErrors"
+                                    @input="$v.email.$touch()"
+                                    @blur="$v.email.$touch()"
                                     solo
                                     prepend-inner-icon="mdi-email-outline">
                                 </v-text-field>
@@ -30,7 +34,9 @@
                                     label="Password"
                                     :append-icon="isPasswordShown ? 'mdi-eye' : 'mdi-eye-off'"
                                     :type="isPasswordShown ? 'text' : 'password'"
-                                    :rules="passwordRules"
+                                    :error-messages="passwordErrors"
+                                    @input="$v.password.$touch()"
+                                    @blur="$v.password.$touch()"
                                     solo
                                     @click:append="isPasswordShown = !isPasswordShown"
                                     prepend-inner-icon="mdi-lock-outline">
@@ -68,6 +74,7 @@
 
 <script>
 import { apiHelper } from '../../utilities/ApiHelper'
+import { required, minLength, email } from 'vuelidate/lib/validators'
 
 export default {
     props: [],
@@ -78,17 +85,44 @@ export default {
         isPasswordShown: false,
         isErrorShown: false,
         errorMessage: '',
-        usernameRules: [
-            value => !!value || 'Required',
-        ],
-        emailRules: [
-            value => !!value || 'Required',
-        ],
-        passwordRules: [
-            value => !!value || 'Required',
-            value => (value && value.length >= 8) || 'Min 8 characters',
-        ]
     }),
+    validations: {
+        username: {
+            required,
+            minLength: minLength(6)
+        },
+        email: {
+            required,
+            email
+        },
+        password: {
+            required,
+            minLength: minLength(6)
+        }
+    },
+    computed: {
+        usernameErrors () {
+            const errors = []
+            if (!this.$v.username.$dirty) return errors
+            !this.$v.username.required && errors.push('Username is required')
+            !this.$v.username.minLength && errors.push('Username must be at least 6 characters')
+            return errors
+        },
+        emailErrors () {
+            const errors = []
+            if (!this.$v.email.$dirty) return errors
+            !this.$v.email.required && errors.push('Email is required')
+            !this.$v.email.email && errors.push('Email is not valid')
+            return errors
+        },
+        passwordErrors () {
+            const errors = []
+            if (!this.$v.password.$dirty) return errors
+            !this.$v.password.required && errors.push('Password is required')
+            !this.$v.password.minLength && errors.push('Password must be at least 6 characters')
+            return errors
+        }
+    },
     mounted: function () {
         this.accessToken = this.$cookie.get('accessToken')
         this.profile = this.$cookie.get('profile')
@@ -107,6 +141,9 @@ export default {
             this.errorMessage = error
         },
         onSubmit: function () {
+            this.$v.$touch()
+            if (this.$v.$invalid) return
+
             const headers = {
                 'Content-Type': 'application/json'
             }

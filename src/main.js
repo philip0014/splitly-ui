@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import Vuelidate from 'vuelidate'
 import Router from 'vue-router'
 import App from './App.vue'
 import Home from './components/Home.vue'
@@ -13,6 +14,7 @@ import vuetify from './plugins/vuetify';
 
 var VueCookie = require('vue-cookie');
 
+Vue.use(Vuelidate)
 Vue.use(Router)
 Vue.use(VueCookie);
 Vue.use(BootstrapVue)
