@@ -1,14 +1,31 @@
 <template>
     <v-main class="bills-container pa-4 pl-6">
-        <div class="title-text">
-            Bills Overview
-        </div>
         <v-dialog
             @click:outside="onCreateClose()"
             v-model="createBillDialog" max-width="500px">
             <template v-slot:activator="{ on, attrs }">
-                <div class="mt-2">
+                <div
+                    v-if="myPendingBills.length === 0 && othersPendingBills.length === 0 && historyBills.length === 0"
+                    class="empty-bill-container d-flex justify-center align-center">
+                    <img src="../assets/empty.png" alt="">
+                    <div class="mt-4 text--text">
+                        <h4>OOPS BILL NOT FOUND</h4>
+                    </div>
                     <v-btn
+                        class="mt-4"
+                        color="primary"
+                        v-bind="attrs"
+                        v-on="on">
+                        Create new bill
+                    </v-btn>
+                </div>
+                <div
+                    v-else>
+                    <div class="title-text">
+                        Bills Overview
+                    </div>
+                    <v-btn
+                        class="mt-2"
                         color="primary"
                         v-bind="attrs"
                         v-on="on">
@@ -56,20 +73,20 @@
                                 prepend-inner-icon="mdi-magnify"
                                 @keyup="onSearchKeywordTyped()">
                             </v-text-field>
-                            <div class="search-result mt-n4 pt-2 pl-2 pr-2">
+                            <div class="search-result mt-n4 pl-2 pr-2">
                                 <div
+                                    class="result-item"
                                     v-for="user in userSearchResult"
-                                    :key="user.id">
-                                    <v-checkbox height="0" v-model="userSelected" :value="user">
-                                        <template v-slot:label>
-                                            <v-avatar class="mt-1" size="32">
-                                                <img :src="user.profileUrl" :alt="user.username">
-                                            </v-avatar>
-                                            <div class="mt-2 ml-4">
-                                                {{ user.username }}
-                                            </div>
-                                        </template>
-                                    </v-checkbox> 
+                                    :key="user.id"
+                                    @click="addSelectedUser(user)">
+                                    <div class="mt-1 mb-1 d-flex">
+                                        <v-avatar class="mt-1" size="32">
+                                            <img :src="user.profileUrl" :alt="user.username">
+                                        </v-avatar>
+                                        <div class="mt-2 ml-4">
+                                            {{ user.username }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -82,6 +99,10 @@
                                 :key="user.id"
                                 class="d-flex justify-space-between align-center mb-2">
                                 <div class="d-flex align-center">
+                                    <v-icon
+                                        class="deselect-user"
+                                        @click="deselectUser(user)"
+                                        left>mdi-close</v-icon>
                                     <v-avatar size="32">
                                         <img :src="user.profileUrl" :alt="user.username">
                                     </v-avatar>
@@ -363,6 +384,29 @@ export default {
 
             apiHelper.get('/api/search/users?keyword=' + this.userSearchKeyword, headers, callback, fallback)
         },
+        addSelectedUser: function (newUser) {
+            let isNewUser = true
+            for (let i = 0; i < this.userSelected.length ; i++) {
+                let selectedUser = this.userSelected[i]
+                if (selectedUser.id === newUser.id) {
+                    isNewUser = false
+                    break
+                }
+            }
+
+            if (isNewUser) {
+                this.userSelected.push(newUser)
+            }
+        },
+        deselectUser: function (user) {
+            for (let i = 0; i < this.userSelected.length ; i++) {
+                let selectedUser = this.userSelected[i]
+                if (selectedUser.id === user.id) {
+                    this.userSelected.splice(i, 1);
+                    break
+                }
+            }
+        },
         onCreateSubmit: function () {
             this.$v.$touch()
             if (this.$v.billDescription.$invalid) return
@@ -501,6 +545,10 @@ export default {
     height: 100%
     overflow-y: auto
 
+.empty-bill-container
+    height: 100%
+    flex-direction: column
+
 button:focus
     outline: 0
 
@@ -515,6 +563,11 @@ button:focus
     border-radius: 4px
     height: 200px
     overflow-y: auto
+    .result-item
+        cursor: pointer
+        transition: color 0.15s
+        &:hover
+            color: #24a19c
     img
         object-fit: cover
 
@@ -523,6 +576,12 @@ button:focus
     border-radius: 4px
     height: 200px
     overflow-y: auto
+    .deselect-user
+        color: #999999
+        cursor: pointer
+        transition: color 0.15s
+        &:hover
+            color: #ff5f40
     img
         object-fit: cover
 

@@ -5,6 +5,7 @@
                 <div class="profile-username">{{ profile.username }}</div>
                 <div class="profile-email">{{ profile.email }}</div>
             </div>
+            <div class="shade-container"></div>
             <div class="avatar-container">
                 <v-avatar size="160">
                     <img :src="profile.profileUrl" :alt="profile.username">
@@ -15,7 +16,9 @@
             <v-text-field
                 v-model="username"
                 label="Username"
-                :rules="usernameRules"
+                :error-messages="usernameErrors"
+                @input="$v.username.$touch()"
+                @blur="$v.username.$touch()"
                 dense
                 outlined>
             </v-text-field>
@@ -164,9 +167,15 @@ export default {
         background-position: center
         position: relative
         .profile-username
-            font-size: 28px
+            font-size: 34px
         .profile-email
             opacity: 0.8
+        .shade-container
+            position: absolute
+            width: 100%
+            height: 80px
+            bottom: 0
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0), #fafafa)
         .avatar-container
             position: absolute
             bottom: -80px

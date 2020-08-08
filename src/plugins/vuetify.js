@@ -14,7 +14,7 @@ export default new Vuetify({
               secondary: '#6ebfb5',
               accent: '#ffc7c7',
               error: '#ff5f40',
-              text: '#a0a2ae',
+              text: '#999999',
               'google-red': '#df4b37'
             },
           },
