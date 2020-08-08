@@ -20,12 +20,12 @@
                     </v-btn>
                 </div>
                 <div
-                    v-else>
+                    v-else
+                    class="d-flex align-center justify-space-between">
                     <div class="title-text">
                         Bills Overview
                     </div>
                     <v-btn
-                        class="mt-2"
                         color="primary"
                         v-bind="attrs"
                         v-on="on">
@@ -114,7 +114,6 @@
                                     <v-text-field
                                         :prefix="billCurrency"
                                         v-model="userBillAmount[user.id]"
-                                        placeholder="10000"
                                         hide-details
                                         outlined
                                         dense>
@@ -159,7 +158,7 @@
                                 {{ bill.description }}
                             </div>
                             <div class="text-nominal mt-2">
-                                {{ bill.currency }} {{ bill.nominalNeeded - bill.nominalPaid }}
+                                {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
                             </div>
                             <v-dialog
                                 @click:outside="onPayClose()"
@@ -181,7 +180,7 @@
                                             <div class="mt-2 pl-2 pr-2">
                                                 <v-text-field
                                                     v-model="payValue"
-                                                    :hint="'You need to pay ' + bill.currency + ' ' + (bill.nominalNeeded - bill.nominalPaid).toString()"
+                                                    :hint="'You need to pay ' + bill.currency + ' ' + Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2)"
                                                     :error-messages="payValueErrors"
                                                     @input="$v.payValue.$touch()"
                                                     @blur="$v.payValue.$touch()"
@@ -242,7 +241,7 @@
                             </div>
                             <small class="text--text text-date">{{ bill.createdAt }}</small>
                             <div class="text-nominal mt-1">
-                                {{ bill.currency }} {{ bill.nominalNeeded - bill.nominalPaid }}
+                                {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
                             </div>
                         </div>
                     </div>
@@ -291,7 +290,7 @@
                                 {{ bill.description }}
                             </div>
                             <div class="text-nominal mt-1 primary--text">
-                                {{ bill.currency }} {{ bill.nominalNeeded }}
+                                {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
                             </div>
                         </div>
                     </div>
@@ -543,11 +542,14 @@ export default {
 <style lang="sass" scoped>
 .bills-container
     height: 100%
-    overflow-y: auto
 
 .empty-bill-container
     height: 100%
     flex-direction: column
+
+.bills-header
+    position: fixed
+    width: 100%
 
 button:focus
     outline: 0

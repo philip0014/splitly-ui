@@ -127,11 +127,11 @@ export default {
     overflow: hidden
     .home-content
         height: 100%
-        display: flex
         .nav-container
-            width: 35%
-            max-width: 300px
+            position: fixed
+            height: 100%
+            width: 300px
             z-index: 1
         .main-container
-            flex: 1
+            margin-left: 300px
 </style>
