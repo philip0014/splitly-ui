@@ -21,36 +21,58 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 Vue.config.productionTip = false
 
+const DEFAULT_TITLE = 'Splitly'
 const router = new Router({
   mode: 'history',
   routes: [
     {
       path: '/',
       name: 'Home',
-      component: Home
+      component: Home,
+      meta: {
+        title: DEFAULT_TITLE + ' | Home'
+      }
     },
     {
       path: '/friends',
       name: 'Friends',
-      component: Home
+      component: Home,
+      meta: {
+        title: DEFAULT_TITLE + ' | Friends'
+      }
     },
     {
       path: '/profile',
       name: 'Profile',
-      component: Home
+      component: Home,
+      meta: {
+        title: DEFAULT_TITLE + ' | Profile'
+      }
     },
     {
       path: '/register',
       name: 'Register',
-      component: Register
+      component: Register,
+      meta: {
+        title: DEFAULT_TITLE + ' | Register'
+      }
     },
     {
       path: '/sign-in',
       name: 'Sign In',
-      component: SignIn
+      component: SignIn,
+      meta: {
+        title: DEFAULT_TITLE + '| Sign In'
+      }
     }
   ]
 })
+
+router.afterEach((to) => {
+  Vue.nextTick(() => {
+      document.title = to.meta.title || DEFAULT_TITLE;
+  });
+});
 
 new Vue({
   vuetify,
