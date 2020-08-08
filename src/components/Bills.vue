@@ -35,7 +35,9 @@
                                 <v-text-field
                                     v-model="billDescription"
                                     label="Bill description"
-                                    :rules="billDescriptionRules"
+                                    :error-messages="billDescriptionErrors"
+                                    @input="$v.billDescription.$touch()"
+                                    @blur="$v.billDescription.$touch()"
                                     outlined
                                     dense
                                     prepend-inner-icon="mdi-credit-card">
@@ -159,20 +161,15 @@
                                                 <v-text-field
                                                     v-model="payValue"
                                                     :hint="'You need to pay ' + bill.currency + ' ' + (bill.nominalNeeded - bill.nominalPaid).toString()"
-                                                    :rules="payValueRules"
+                                                    :error-messages="payValueErrors"
+                                                    @input="$v.payValue.$touch()"
+                                                    @blur="$v.payValue.$touch()"
                                                     persistent-hint
                                                     outlined
                                                     dense
                                                     label="Amount of money you are going to pay">
                                                 </v-text-field>
                                             </div>
-                                            <v-slider
-                                                class="mt-4"
-                                                v-model="payValue"
-                                                track-color="primary lighten-2"
-                                                track-fill-color="primary"
-                                                :max="bill.nominalNeeded - bill.nominalPaid">
-                                            </v-slider>
                                         </v-col>
                                     </v-row>
                                     <v-card-actions>
@@ -184,6 +181,14 @@
                                             text
                                             @click="onPaySubmit(bill)">
                                             Pay
+                                        </v-btn>
+                                        <v-btn
+                                            :loading="isLoading"
+                                            :disabled="isLoading"
+                                            color="primary darken-1"
+                                            text
+                                            @click="onSettleUpSubmit(bill)">
+                                            Settle Up
                                         </v-btn>
                                     </v-card-actions>
                                 </v-card>
@@ -277,6 +282,7 @@
 
 <script>
 import { apiHelper } from '../utilities/ApiHelper'
+import { required, minLength, decimal } from 'vuelidate/lib/validators'
 
 export default {
     props: ['pendingBills', 'completeBills'],
@@ -287,23 +293,45 @@ export default {
         currencyCodes: [],
         billCurrency: 'IDR',
         billDescription: '',
-        billDescriptionRules: [
-            value => !!value || 'Required',
-        ],
         userSearchKeyword: '',
         userSearchResult: [],
         userSelected: [],
         userBillAmount: {},
         payBillDialog: false,
         payValue: 0,
-        payValueRules: [
-            value => (Number(value) !== 0) || 'Required',
-        ],
         myPendingBills: [],
         othersPendingBills: [],
         historyBills: [],
         profile: {}
     }),
+    validations: {
+        billDescription: {
+            required,
+            minLength: minLength(6)
+        },
+        payValue: {
+            required,
+            decimal,
+            minValue: (value) => Number(value) > 0
+        }
+    },
+    computed: {
+        billDescriptionErrors () {
+            const errors = []
+            if (!this.$v.billDescription.$dirty) return errors
+            !this.$v.billDescription.required && errors.push('Description is required')
+            !this.$v.billDescription.minLength && errors.push('Description must be at least 6 characters')
+            return errors
+        },
+        payValueErrors () {
+            const errors = []
+            if (!this.$v.payValue.$dirty) return errors
+            !this.$v.payValue.required && errors.push('Amount is required')
+            !this.$v.payValue.decimal && errors.push('Amount must be numeric')
+            !this.$v.payValue.minValue && errors.push('Amount is required')
+            return errors
+        }
+    },
     methods: {
         onCreateClose: function () {
             this.createBillDialog = false
@@ -336,6 +364,9 @@ export default {
             apiHelper.get('/api/search/users?keyword=' + this.userSearchKeyword, headers, callback, fallback)
         },
         onCreateSubmit: function () {
+            this.$v.$touch()
+            if (this.$v.billDescription.$invalid) return
+
             this.isLoading = true
 
             const billParticipants = []
@@ -375,6 +406,9 @@ export default {
             this.payValue = 0
         },
         onPaySubmit: function (bill) {
+            this.$v.$touch()
+            if (this.$v.payValue.$invalid) return
+
             this.isLoading = true
 
             const headers = {
@@ -397,11 +431,40 @@ export default {
                 this.isLoading = false
             }).bind(this)
 
+            this.payValue = Number(this.payValue)
+            if (this.payValue > (bill.nominalNeeded - bill.nominalPaid)) {
+                this.payValue = (bill.nominalNeeded - bill.nominalPaid)
+            }
+            
             const data = {
                 nominalPaid: this.payValue
             }
 
             apiHelper.put('/api/bill/pay/' + bill.id, headers, JSON.stringify(data), callback, fallback)
+        },
+        onSettleUpSubmit: function (bill) {
+            this.isLoading = true
+
+            const headers = {
+                'Authorization': 'Bearer ' + this.accessToken
+            }
+
+            const callback = (function (response) {
+                console.log(response)
+                this.payBillDialog = false
+                this.payValue = 0
+                this.isLoading = false
+                this.$emit('dataChanged')
+            }).bind(this)
+
+            const fallback = (function (error) {
+                console.log(error)
+                this.payBillDialog = false
+                this.payValue = 0
+                this.isLoading = false
+            }).bind(this)
+
+            apiHelper.put('/api/bill/settleUp/' + bill.id, headers, null, callback, fallback)
         }
     },
     mounted: function () {

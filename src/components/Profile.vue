@@ -25,6 +25,9 @@
                     label="New Password"
                     placeholder="Your new password here"
                     type="password"
+                    :error-messages="passwordErrors"
+                    @input="$v.password.$touch()"
+                    @blur="$v.password.$touch()"
                     dense
                     outlined>
                 </v-text-field>
@@ -33,6 +36,9 @@
                     label="Confirm New Password"
                     placeholder="Confirm your new password"
                     type="password"
+                    :error-messages="confirmPasswordErrors"
+                    @input="$v.confirmPassword.$touch()"
+                    @blur="$v.confirmPassword.$touch()"
                     dense
                     outlined>
                 </v-text-field>
@@ -63,21 +69,55 @@
 
 <script>
 import { apiHelper } from '../utilities/ApiHelper'
+import { required, minLength, sameAs } from 'vuelidate/lib/validators'
 
 export default {
     data: () => ({
         accessToken: '',
         username: '',
-        usernameRules: [
-            value => !!value || 'Required',
-        ],
         password: '',
         confirmPassword: '',
         imageFile: null,
         profile: {}
     }),
+    validations: {
+        username: {
+            required,
+            minLength: minLength(6)
+        },
+        password: {
+            minLength: minLength(6)
+        },
+        confirmPassword: {
+            sameAs: sameAs('password')
+        }
+    },
+    computed: {
+        usernameErrors () {
+            const errors = []
+            if (!this.$v.username.$dirty) return errors
+            !this.$v.username.required && errors.push('Username is required')
+            !this.$v.username.minLength && errors.push('Username must be at least 6 characters')
+            return errors
+        },
+        passwordErrors () {
+            const errors = []
+            if (!this.$v.password.$dirty) return errors
+            !this.$v.password.minLength && errors.push('Password must be at least 6 characters')
+            return errors
+        },
+        confirmPasswordErrors () {
+            const errors = []
+            if (!this.$v.confirmPassword.$dirty) return errors
+            !this.$v.confirmPassword.sameAs && errors.push('Confirm password does not match')
+            return errors
+        }
+    },
     methods: {
         onUpdateProfile: function () {
+            this.$v.$touch()
+            if (this.$v.$invalid) return
+
             const headers = {
                 'Authorization': 'Bearer ' + this.accessToken
             }
