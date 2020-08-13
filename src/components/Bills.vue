@@ -26,10 +26,15 @@
                         Bills Overview
                     </div>
                     <v-btn
+                        fab
+                        large
+                        fixed
+                        bottom
+                        right
                         color="primary"
                         v-bind="attrs"
                         v-on="on">
-                        Create Bill
+                        <v-icon>mdi-credit-card-plus</v-icon>
                     </v-btn>
                 </div>
             </template>
@@ -37,7 +42,7 @@
                 <v-row no-gutters class="pa-6">
                     <v-col cols="12">
                         <div class="create-bill-title">
-                            Insert bill details
+                            Create new bill
                         </div>
                         <v-row no-gutters class="d-flex justify-space-between align-center mt-4">
                             <v-col cols="3">

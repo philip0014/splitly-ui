@@ -26,10 +26,15 @@
                         Friends Overview
                     </div>
                     <v-btn
+                        fab
+                        large
+                        fixed
+                        bottom
+                        right
                         color="primary"
                         v-bind="attrs"
                         v-on="on">
-                        Find Friend
+                        <v-icon>mdi-account-multiple-plus</v-icon>
                     </v-btn>
                 </div>
             </template>
@@ -37,7 +42,7 @@
                 <v-row no-gutters class="pa-6">
                     <v-col cols="12">
                         <div class="search-friend-title">
-                            Find your friends
+                            Find new friends
                         </div>
                         <div class="search-container mt-4">
                             <v-text-field
