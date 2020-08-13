@@ -10,6 +10,11 @@
                     :pendingBills="data.pendingBills"
                     :completeBills="data.completeBills"
                     v-on:dataChanged="onDataChanged"/>
+                <Friend
+                    v-if="isDataReady && activeIndex == 2"
+                    :friends="data.friends"
+                    :friendRequests="data.friendRequests"
+                    v-on:dataChanged="onDataChanged"/>
                 <Profile
                     v-if="isDataReady && activeIndex == 3"
                     v-on:dataChanged="onDataChanged"/>
@@ -21,6 +26,7 @@
 <script>
 import SideNav from './SideNav'
 import Bills from './Bills'
+import Friend from './Friend'
 import Profile from './Profile'
 import { apiHelper } from '../utilities/ApiHelper'
 
@@ -28,6 +34,7 @@ export default {
     components: {
         SideNav,
         Bills,
+        Friend,
         Profile
     },
     data: () => ({
@@ -53,6 +60,10 @@ export default {
             case 1:
                 this.isDataReady = false
                 this.onBillsOpened()
+                break
+            case 2:
+                this.isDataReady = false
+                this.onFriendsOpened()
                 break
             }
         },
@@ -89,6 +100,37 @@ export default {
 
             apiHelper.get('/api/bill/pending', headers, pendingCallback, fallback)
             apiHelper.get('/api/bill/complete', headers, completeCallback, fallback)
+        },
+        onFriendsOpened: function () {
+            this.dataReadyCount = 0
+            this.dataNeededCount = 2
+
+            const headers = {
+                'Authorization': 'Bearer ' + this.accessToken
+            }
+
+            const friendsCallback = (function (response) {
+                this.data.friends = response
+                this.dataReadyCount += 1
+                if (this.dataReadyCount === this.dataNeededCount) {
+                    this.isDataReady = true
+                }
+            }).bind(this)
+            
+            const friendRequestsCallback = (function (response) {
+                this.data.friendRequests = response
+                this.dataReadyCount += 1
+                if (this.dataReadyCount === this.dataNeededCount) {
+                    this.isDataReady = true
+                }
+            }).bind(this)
+
+            const fallback = (function (error) {
+                console.log(error)
+            }).bind(this)
+
+            apiHelper.get('/api/friend', headers, friendsCallback, fallback)
+            apiHelper.get('/api/friend/request', headers, friendRequestsCallback, fallback)
         }
     },
     created: function () {
@@ -134,4 +176,5 @@ export default {
             z-index: 1
         .main-container
             margin-left: 300px
+            height: 100%
 </style>
