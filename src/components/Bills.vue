@@ -7,7 +7,7 @@
                 <div
                     v-if="myPendingBills.length === 0 && othersPendingBills.length === 0 && historyBills.length === 0"
                     class="empty-bill-container d-flex justify-center align-center">
-                    <img src="../assets/empty.png" alt="">
+                    <img src="../assets/empty-bill.png" alt="">
                     <div class="mt-4 text--text">
                         <h4>OOPS BILL NOT FOUND</h4>
                     </div>
