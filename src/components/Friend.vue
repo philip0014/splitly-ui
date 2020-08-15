@@ -82,6 +82,61 @@
                 </v-row>
             </v-card>
         </v-dialog>
+        <div class="friend-request-container mt-4">
+            <div>
+                <div class="content-title">
+                    Request received
+                </div>
+                <hr>
+                <div class="request-content d-flex">
+                    <v-card
+                        class="mr-6"
+                        v-for="request in friendRequestReceived"
+                        :key="request.id"
+                        width="125"
+                        height="150">
+                            <div class="pt-4">
+                                <div class="request-profile text-center">
+                                    <img :src="request.from.profileUrl" :alt="request.from.username" width="50" height="50">
+                                </div>
+                                <div class="text-center mt-1">{{ request.from.username }}</div>
+                                <div class="request-action d-flex justify-space-between mt-4 pl-6 pr-6">
+                                    <v-icon
+                                        size="30"
+                                        class="action-reject error--text"
+                                        @click="rejectRequest(request)">mdi-close-circle</v-icon>
+                                    <v-icon
+                                        size="30"
+                                        class="action-accept primary--text"
+                                        @click="acceptRequest(request)">mdi-check-circle</v-icon>
+                                </div>
+                            </div>
+                    </v-card>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="content-title">
+                    Request sent
+                </div>
+                <hr>
+                <div class="request-content d-flex">
+                    <v-card
+                        class="mr-6"
+                        v-for="request in friendRequestSent"
+                        :key="request.id"
+                        width="125"
+                        height="150">
+                            <div class="pt-4">
+                                <div class="request-profile text-center">
+                                    <img :src="request.to.profileUrl" :alt="request.to.username" width="50" height="50">
+                                </div>
+                                <div class="text-center mt-1">{{ request.to.username }}</div>
+                                <div class="request-description text-center text--text mt-2 pl-2 pr-2">Waiting for approval</div>
+                            </div>
+                    </v-card>
+                </div>
+            </div>
+        </div>
     </v-main>
 </template>
 
@@ -95,8 +150,11 @@ export default {
         profile: {},
         searchFriendDialog: false,
         friendRequestMapping: {},
+        friendRequestReceived: [],
+        friendRequestSent: [],
         userSearchKeyword: '',
-        userSearchResult: []
+        userSearchResult: [],
+        tab: null
     }),
     methods: {
         onSearchClose: function () {
@@ -156,6 +214,40 @@ export default {
             }
 
             apiHelper.post('/api/friend/request', headers, JSON.stringify(data), callback, fallback)
+        },
+        acceptRequest: function (request) {
+            const headers = {
+                'Authorization': 'Bearer ' + this.accessToken,
+                'Content-Type': 'application/json'
+            }
+
+            const callback = (function (response) {
+                console.log(response)
+                this.$emit('dataChanged')
+            }).bind(this)
+
+            const fallback = (function (error) {
+                console.log(error)
+            }).bind(this)
+
+            apiHelper.put('/api/friend/accept/' + request.from.id, headers, null, callback, fallback)
+        },
+        rejectRequest: function (request) {
+            const headers = {
+                'Authorization': 'Bearer ' + this.accessToken,
+                'Content-Type': 'application/json'
+            }
+
+            const callback = (function (response) {
+                console.log(response)
+                this.$emit('dataChanged')
+            }).bind(this)
+
+            const fallback = (function (error) {
+                console.log(error)
+            }).bind(this)
+
+            apiHelper.put('/api/friend/reject/' + request.from.id, headers, null, callback, fallback)
         }
     },
     mounted: function () {
@@ -165,14 +257,18 @@ export default {
         for (let i = 0; i < this.friendRequests.length ; i++) {
             if (this.friendRequests[i].from.id === this.profile.id) {
                 this.friendRequestMapping[this.friendRequests[i].to.id] = this.friendRequests[i].to
+                this.friendRequestSent.push(this.friendRequests[i])
             } else {
                 this.friendRequestMapping[this.friendRequests[i].from.id] = this.friendRequests[i].from
+                this.friendRequestReceived.push(this.friendRequests[i])
             }
         }
 
         console.log(this.friends)
         console.log(this.friendRequests)
         console.log(this.friendRequestMapping)
+        console.log(this.friendRequestSent)
+        console.log(this.friendRequestReceived)
     }
 }
 </script>
@@ -208,4 +304,18 @@ button:focus
                 color: #24a19c
     img
         object-fit: cover
+
+.friend-request-container
+    .content-title
+        font-size: 18px
+    .request-profile
+        img
+            object-fit: cover
+            border-radius: 50%
+    .action-reject
+        cursor: pointer
+    .action-accept
+        cursor: pointer
+    .request-description
+        font-size: 12px
 </style>

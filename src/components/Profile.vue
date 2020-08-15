@@ -175,7 +175,7 @@ export default {
             width: 100%
             height: 80px
             bottom: 0
-            background-image: linear-gradient(to bottom, rgba(0,0,0,0), #fafafa)
+            background-image: linear-gradient(to bottom, rgba(0,0,0,0), #ffffff)
         .avatar-container
             position: absolute
             bottom: -80px

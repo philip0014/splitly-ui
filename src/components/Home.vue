@@ -165,7 +165,6 @@ export default {
 <style lang="sass" scoped>
 .home-container
     height: 100%
-    background-color: #fafafa
     overflow: hidden
     .home-content
         height: 100%
