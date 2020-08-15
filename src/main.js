@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
 import Vuelidate from 'vuelidate'
 import Router from 'vue-router'
 import App from './App.vue'
@@ -12,8 +13,11 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vuetify from './plugins/vuetify';
 
+import 'swiper/swiper-bundle.css'
+
 var VueCookie = require('vue-cookie');
 
+Vue.use(VueAwesomeSwiper);
 Vue.use(Vuelidate)
 Vue.use(Router)
 Vue.use(VueCookie);

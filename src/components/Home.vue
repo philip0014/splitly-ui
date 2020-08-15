@@ -99,7 +99,7 @@ export default {
             }).bind(this)
 
             apiHelper.get('/api/bill/pending', headers, pendingCallback, fallback)
-            apiHelper.get('/api/bill/complete', headers, completeCallback, fallback)
+            apiHelper.get('/api/bill/complete?size=5', headers, completeCallback, fallback)
         },
         onFriendsOpened: function () {
             this.dataReadyCount = 0

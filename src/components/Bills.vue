@@ -146,81 +146,86 @@
             <div class="content-title">You owe to</div>
             <hr>
             <div class="cards-container">
-                <v-card
-                    class="mr-6 mb-6"
-                    v-for="bill in myPendingBills"
-                    :key="bill.id"
-                    width="300"
-                    height="100">
-                    <div class="d-flex">
-                        <img :src="bill.receiver.profileUrl" :alt="bill.receiver.username" width="100" height="100">
-                        <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
-                            <small class="text--text text-date">{{ bill.createdAt }}</small>
-                            <div>
-                                <strong>{{ bill.receiver.username }}</strong>
+                <swiper class="swiper" :options="swiperOption">
+                    <swiper-slide
+                        class="swiper-item pr-1 pb-1"
+                        v-for="bill in myPendingBills"
+                        :key="bill.id">
+                        <v-card
+                            class="mr-6 mb-6"
+                            width="300"
+                            height="100">
+                            <div class="d-flex">
+                                <img :src="bill.receiver.profileUrl" :alt="bill.receiver.username" width="100" height="100">
+                                <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
+                                    <small class="text--text text-date">{{ bill.createdAt }}</small>
+                                    <div>
+                                        <strong>{{ bill.receiver.username }}</strong>
+                                    </div>
+                                    <div class="text-description mt-n2">
+                                        {{ bill.description }}
+                                    </div>
+                                    <div class="text-nominal mt-2">
+                                        {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
+                                    </div>
+                                    <v-dialog
+                                        @click:outside="onPayClose()"
+                                        v-model="payBillDialog" max-width="500px">
+                                        <template v-slot:activator="{ on, attrs }">
+                                            <a
+                                                class="pay-bill-btn pa-0"
+                                                v-bind="attrs"
+                                                v-on="on">
+                                                Pay Bill
+                                            </a>
+                                        </template>
+                                        <v-card>
+                                            <v-card-title>
+                                                <span class="headline">Pay to {{ bill.receiver.username }}</span>
+                                            </v-card-title>
+                                            <v-row no-gutters class="mt-4 pl-4 pr-4 pay-dialog">
+                                                <v-col cols="12">
+                                                    <div class="mt-2 pl-2 pr-2">
+                                                        <v-text-field
+                                                            v-model="payValue"
+                                                            :hint="'You need to pay ' + bill.currency + ' ' + Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2)"
+                                                            :error-messages="payValueErrors"
+                                                            @input="$v.payValue.$touch()"
+                                                            @blur="$v.payValue.$touch()"
+                                                            persistent-hint
+                                                            outlined
+                                                            dense
+                                                            label="Amount of money you are going to pay">
+                                                        </v-text-field>
+                                                    </div>
+                                                </v-col>
+                                            </v-row>
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn
+                                                    :loading="isLoading"
+                                                    :disabled="isLoading"
+                                                    color="primary darken-1"
+                                                    text
+                                                    @click="onPaySubmit(bill)">
+                                                    Pay
+                                                </v-btn>
+                                                <v-btn
+                                                    :loading="isLoading"
+                                                    :disabled="isLoading"
+                                                    color="primary darken-1"
+                                                    text
+                                                    @click="onSettleUpSubmit(bill)">
+                                                    Settle Up
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-dialog>
+                                </div>
                             </div>
-                            <div class="text-description mt-n2">
-                                {{ bill.description }}
-                            </div>
-                            <div class="text-nominal mt-2">
-                                {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
-                            </div>
-                            <v-dialog
-                                @click:outside="onPayClose()"
-                                v-model="payBillDialog" max-width="500px">
-                                <template v-slot:activator="{ on, attrs }">
-                                    <a
-                                        class="pay-bill-btn pa-0"
-                                        v-bind="attrs"
-                                        v-on="on">
-                                        Pay Bill
-                                    </a>
-                                </template>
-                                <v-card>
-                                    <v-card-title>
-                                        <span class="headline">Pay to {{ bill.receiver.username }}</span>
-                                    </v-card-title>
-                                    <v-row no-gutters class="mt-4 pl-4 pr-4 pay-dialog">
-                                        <v-col cols="12">
-                                            <div class="mt-2 pl-2 pr-2">
-                                                <v-text-field
-                                                    v-model="payValue"
-                                                    :hint="'You need to pay ' + bill.currency + ' ' + Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2)"
-                                                    :error-messages="payValueErrors"
-                                                    @input="$v.payValue.$touch()"
-                                                    @blur="$v.payValue.$touch()"
-                                                    persistent-hint
-                                                    outlined
-                                                    dense
-                                                    label="Amount of money you are going to pay">
-                                                </v-text-field>
-                                            </div>
-                                        </v-col>
-                                    </v-row>
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
-                                        <v-btn
-                                            :loading="isLoading"
-                                            :disabled="isLoading"
-                                            color="primary darken-1"
-                                            text
-                                            @click="onPaySubmit(bill)">
-                                            Pay
-                                        </v-btn>
-                                        <v-btn
-                                            :loading="isLoading"
-                                            :disabled="isLoading"
-                                            color="primary darken-1"
-                                            text
-                                            @click="onSettleUpSubmit(bill)">
-                                            Settle Up
-                                        </v-btn>
-                                    </v-card-actions>
-                                </v-card>
-                            </v-dialog>
-                        </div>
-                    </div>
-                </v-card>
+                        </v-card>
+                    </swiper-slide>
+                </swiper>
             </div>
         </div>
         <div
@@ -229,28 +234,33 @@
             <div class="content-title">Who needs to pay you</div>
             <hr>
             <div class="cards-container">
-                <v-card
-                    class="mr-6 mb-6"
-                    v-for="bill in othersPendingBills"
-                    :key="bill.id"
-                    width="300"
-                    height="100">
-                    <div class="d-flex">
-                        <img :src="bill.giver.profileUrl" :alt="bill.giver.username" width="100" height="100">
-                        <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
-                            <div>
-                                <strong>{{ bill.giver.username }}</strong>
+                <swiper class="swiper" :options="swiperOption">
+                    <swiper-slide
+                        class="swiper-item pr-1 pb-1"
+                        v-for="bill in othersPendingBills"
+                        :key="bill.id">
+                        <v-card
+                            class="mr-6 mb-6"
+                            width="300"
+                            height="100">
+                            <div class="d-flex">
+                                <img :src="bill.giver.profileUrl" :alt="bill.giver.username" width="100" height="100">
+                                <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
+                                    <div>
+                                        <strong>{{ bill.giver.username }}</strong>
+                                    </div>
+                                    <div class="text-description mt-n2">
+                                        {{ bill.description }}
+                                    </div>
+                                    <small class="text--text text-date">{{ bill.createdAt }}</small>
+                                    <div class="text-nominal mt-1">
+                                        {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-description mt-n2">
-                                {{ bill.description }}
-                            </div>
-                            <small class="text--text text-date">{{ bill.createdAt }}</small>
-                            <div class="text-nominal mt-1">
-                                {{ bill.currency }} {{ Number(bill.nominalNeeded - bill.nominalPaid).toFixed(2) }}
-                            </div>
-                        </div>
-                    </div>
-                </v-card>
+                        </v-card>
+                    </swiper-slide>
+                </swiper>
             </div>
         </div>
         <div
@@ -259,47 +269,66 @@
             <div class="content-title">Completed</div>
             <hr>
             <div class="cards-container">
-                <v-card
-                    class="mr-6 mb-6"
-                    v-for="bill in historyBills"
-                    :key="bill.id"
-                    width="300"
-                    height="100">
-                    <div
-                        v-if="bill.giver.id == profile.id"
-                        class="d-flex">
-                        <img :src="bill.receiver.profileUrl" :alt="bill.receiver.username" width="100" height="100">
-                        <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
-                            <small class="text--text text-date">{{ bill.createdAt }}</small>
-                            <div>
-                                You paid <strong>{{ bill.receiver.username }}</strong>
+                <swiper class="swiper" :options="swiperOption">
+                    <swiper-slide
+                        class="swiper-item pr-1 pb-1"
+                        v-for="bill in historyBills"
+                        :key="bill.id">
+                        <v-card
+                            width="300"
+                            height="100">
+                            <div
+                                v-if="bill.giver.id == profile.id"
+                                class="d-flex">
+                                <img :src="bill.receiver.profileUrl" :alt="bill.receiver.username" width="100" height="100">
+                                <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
+                                    <small class="text--text text-date">{{ bill.createdAt }}</small>
+                                    <div>
+                                        You paid <strong>{{ bill.receiver.username }}</strong>
+                                    </div>
+                                    <div class="text-description mt-n2">
+                                        {{ bill.description }}
+                                    </div>
+                                    <div class="text-nominal mt-1 error--text">
+                                        {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-description mt-n2">
-                                {{ bill.description }}
+                            <div
+                                v-else
+                                class="d-flex">
+                                <img :src="bill.giver.profileUrl" :alt="bill.giver.username" width="100" height="100">
+                                <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
+                                    <small class="text--text text-date">{{ bill.createdAt }}</small>
+                                    <div>
+                                        <strong>{{ bill.giver.username }}</strong> paid you
+                                    </div>
+                                    <div class="text-description mt-n2">
+                                        {{ bill.description }}
+                                    </div>
+                                    <div class="text-nominal mt-1 primary--text">
+                                        {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
+                                    </div>
+                                </div>
                             </div>
-                            <div class="text-nominal mt-1 error--text">
-                                {{ bill.currency }} {{ bill.nominalNeeded }}
+                        </v-card>
+                    </swiper-slide>
+                    <swiper-slide
+                        v-if="(completeBills.page + 1) !== completeBills.totalPage"
+                        class="view-all-container d-flex align-center pb-1 mr-2">
+                        <v-btn
+                            width="75"
+                            height="75"
+                            color="primary">
+                            <div class="view-all-content d-flex justify-center align-center flex-column pa-2">
+                                <v-icon size="30" color="white">
+                                    mdi-logout-variant
+                                </v-icon>
+                                <div class="white--text">View All</div>
                             </div>
-                        </div>
-                    </div>
-                    <div
-                        v-else
-                        class="d-flex">
-                        <img :src="bill.giver.profileUrl" :alt="bill.giver.username" width="100" height="100">
-                        <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
-                            <small class="text--text text-date">{{ bill.createdAt }}</small>
-                            <div>
-                                <strong>{{ bill.giver.username }}</strong> paid you
-                            </div>
-                            <div class="text-description mt-n2">
-                                {{ bill.description }}
-                            </div>
-                            <div class="text-nominal mt-1 primary--text">
-                                {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
-                            </div>
-                        </div>
-                    </div>
-                </v-card>
+                        </v-btn>
+                    </swiper-slide>
+                </swiper>
             </div>
         </div>
     </v-main>
@@ -327,7 +356,12 @@ export default {
         myPendingBills: [],
         othersPendingBills: [],
         historyBills: [],
-        profile: {}
+        profile: {},
+        swiperOption: {
+            slidesPerView: 'auto',
+            spaceBetween: 30,
+            freeMode: true
+        }
     }),
     validations: {
         billDescription: {
@@ -535,7 +569,8 @@ export default {
                 this.othersPendingBills.push(bill)
             }
         });
-        this.completeBills.forEach(bill => {
+        console.log(this.completeBills)
+        this.completeBills.data.forEach(bill => {
             let date = new Date(bill.createdAt)
             bill.createdAt = dateFormatter.format(date)
             this.historyBills.push(bill)
@@ -596,20 +631,23 @@ button:focus
     .content-title
         font-size: 18px
     .cards-container
-        display: flex
-        flex-wrap: wrap
-        align-items: center
         img
             object-fit: cover
-        .bill-card-content
-            flex: 1
-            display: flex
-            flex-direction: column
-            justify-content: space-between
-            a:hover
-                text-decoration: none
-                color: #24a19c
-
+        .swiper-item
+            width: 300px
+            .bill-card-content
+                flex: 1
+                display: flex
+                flex-direction: column
+                justify-content: space-between
+                a:hover
+                    text-decoration: none
+                    color: #24a19c
+        .view-all-container
+            width: 75px
+            height: 100px
+            .view-all-content
+                font-size: 12px
     img
         border-radius: 5px 0px 0px 5px
 
