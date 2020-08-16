@@ -144,7 +144,7 @@
             v-if="myPendingBills.length != 0"
             class="bills-content mt-6">
             <div class="content-title">You owe to</div>
-            <hr>
+            <hr class="mt-2">
             <div class="cards-container">
                 <swiper class="swiper" :options="swiperOption">
                     <swiper-slide
@@ -232,7 +232,7 @@
             v-if="othersPendingBills.length != 0"
             class="bills-content mt-4">
             <div class="content-title">Who needs to pay you</div>
-            <hr>
+            <hr class="mt-2">
             <div class="cards-container">
                 <swiper class="swiper" :options="swiperOption">
                     <swiper-slide
@@ -266,8 +266,77 @@
         <div
             v-if="historyBills.length != 0"
             class="bills-content mt-4">
-            <div class="content-title">Completed</div>
-            <hr>
+            <div class="d-flex justify-space-between">
+                <div class="content-title">Completed</div>
+                <v-dialog
+                    @click:outside="onCompleteBillClose()"
+                    v-if="(completeBills.page + 1) !== completeBills.totalPage"
+                    v-model="completeBillDialog" width="400" max-width="400">
+                    <template v-slot:activator="{ on, attrs }">
+                        <a
+                            class="pa-0"
+                            v-bind="attrs"
+                            v-on="on">
+                            View All
+                        </a>
+                    </template>
+                    <v-card
+                        id="history-card"
+                        class="history-card"
+                        height="500"
+                        @mouseenter="onCompleteBillLoad()"
+                        @scroll="onCompleteDialogScroll()">
+                        <v-card-title>
+                            <span class="headline">Bill history</span>
+                        </v-card-title>
+                        <v-row no-gutters class="pl-6 pr-6">
+                            <v-col cols="12">
+                                <div>
+                                    <v-card
+                                        class="mt-4"
+                                        v-for="bill in completeBillDialogData"
+                                        :key="bill.id"
+                                        height="100">
+                                        <div class="d-flex">
+                                            <img :src="bill.user.profileUrl" :alt="bill.user.username" width="100" height="100">
+                                            <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
+                                                <small class="text--text text-date">{{ bill.createdAt }}</small>
+                                                <div
+                                                    v-if="bill.isMyBill">
+                                                    You paid <strong>{{ bill.user.username }}</strong>
+                                                </div>
+                                                <div
+                                                    v-else>
+                                                    <strong>{{ bill.user.username }}</strong> paid you
+                                                </div>
+                                                <div class="text-description mt-n2">
+                                                    {{ bill.description }}
+                                                </div>
+                                                <div
+                                                    v-if="bill.isMyBill"
+                                                    class="text-nominal mt-1 error--text">
+                                                    {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
+                                                </div>
+                                                <div
+                                                    v-else
+                                                    class="text-nominal mt-1 primary--text">
+                                                    {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </v-card>
+                                    <div
+                                        class="history-loader text-center pt-2"
+                                        v-bind:class="isCompleteBillLoading ? 'history-loader-active' : ''">
+                                        <img src="../assets/loader.gif" alt="" width="50" height="50">
+                                    </div>
+                                </div>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-dialog>
+            </div>
+            <hr class="mt-2">
             <div class="cards-container">
                 <swiper class="swiper" :options="swiperOption">
                     <swiper-slide
@@ -277,56 +346,34 @@
                         <v-card
                             width="300"
                             height="100">
-                            <div
-                                v-if="bill.giver.id == profile.id"
-                                class="d-flex">
-                                <img :src="bill.receiver.profileUrl" :alt="bill.receiver.username" width="100" height="100">
+                            <div class="d-flex">
+                                <img :src="bill.user.profileUrl" :alt="bill.user.username" width="100" height="100">
                                 <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
                                     <small class="text--text text-date">{{ bill.createdAt }}</small>
-                                    <div>
-                                        You paid <strong>{{ bill.receiver.username }}</strong>
+                                    <div
+                                        v-if="bill.isMyBill">
+                                        You paid <strong>{{ bill.user.username }}</strong>
+                                    </div>
+                                    <div
+                                        v-else>
+                                        <strong>{{ bill.user.username }}</strong> paid you
                                     </div>
                                     <div class="text-description mt-n2">
                                         {{ bill.description }}
                                     </div>
-                                    <div class="text-nominal mt-1 error--text">
+                                    <div
+                                        v-if="bill.isMyBill"
+                                        class="text-nominal mt-1 error--text">
                                         {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
                                     </div>
-                                </div>
-                            </div>
-                            <div
-                                v-else
-                                class="d-flex">
-                                <img :src="bill.giver.profileUrl" :alt="bill.giver.username" width="100" height="100">
-                                <div class="bill-card-content pl-2 pr-2 pt-1 pb-1">
-                                    <small class="text--text text-date">{{ bill.createdAt }}</small>
-                                    <div>
-                                        <strong>{{ bill.giver.username }}</strong> paid you
-                                    </div>
-                                    <div class="text-description mt-n2">
-                                        {{ bill.description }}
-                                    </div>
-                                    <div class="text-nominal mt-1 primary--text">
+                                    <div
+                                        v-else
+                                        class="text-nominal mt-1 primary--text">
                                         {{ bill.currency }} {{ Number(bill.nominalNeeded).toFixed(2) }}
                                     </div>
                                 </div>
                             </div>
                         </v-card>
-                    </swiper-slide>
-                    <swiper-slide
-                        v-if="(completeBills.page + 1) !== completeBills.totalPage"
-                        class="view-all-container d-flex align-center pb-1 mr-2">
-                        <v-btn
-                            width="75"
-                            height="75"
-                            color="primary">
-                            <div class="view-all-content d-flex justify-center align-center flex-column pa-2">
-                                <v-icon size="30" color="white">
-                                    mdi-logout-variant
-                                </v-icon>
-                                <div class="white--text">View All</div>
-                            </div>
-                        </v-btn>
                     </swiper-slide>
                 </swiper>
             </div>
@@ -356,6 +403,10 @@ export default {
         myPendingBills: [],
         othersPendingBills: [],
         historyBills: [],
+        completeBillDialog: false,
+        completeBillDialogObj: {},
+        completeBillDialogData: [],
+        isCompleteBillLoading: false,
         profile: {},
         swiperOption: {
             slidesPerView: 'auto',
@@ -547,6 +598,20 @@ export default {
             }).bind(this)
 
             apiHelper.put('/api/bill/settleUp/' + bill.id, headers, null, callback, fallback)
+        },
+        onCompleteBillLoad: function () {
+            this.completeBillDialogObj = document.getElementById('history-card')
+        },
+        onCompleteBillClose: function () {
+            this.completeBillDialog = false
+            this.isCompleteBillLoading = false
+        },
+        onCompleteDialogScroll: function () {
+            let obj = this.completeBillDialogObj
+            if(obj.scrollTop === (obj.scrollHeight - obj.offsetHeight)) {
+                console.log('buttom')
+                this.isCompleteBillLoading = true
+            }
         }
     },
     mounted: function () {
@@ -569,11 +634,25 @@ export default {
                 this.othersPendingBills.push(bill)
             }
         });
-        console.log(this.completeBills)
+        
         this.completeBills.data.forEach(bill => {
-            let date = new Date(bill.createdAt)
-            bill.createdAt = dateFormatter.format(date)
-            this.historyBills.push(bill)
+            let currBill = {
+                id: bill.id,
+                createdAt: dateFormatter.format(new Date(bill.createdAt)),
+                description: bill.description,
+                currency: bill.currency,
+                nominalNeeded: bill.nominalNeeded
+            }
+            if (bill.giver.id == this.profile.id) {
+                currBill.isMyBill = true
+                currBill.user = bill.receiver
+            } else {
+                currBill.isMyBill = false
+                currBill.user = bill.giver
+            }
+
+            this.historyBills.push(currBill)
+            this.completeBillDialogData.push(currBill)
         });
     }
 }
@@ -635,14 +714,14 @@ button:focus
             object-fit: cover
         .swiper-item
             width: 300px
-            .bill-card-content
-                flex: 1
-                display: flex
-                flex-direction: column
-                justify-content: space-between
-                a:hover
-                    text-decoration: none
-                    color: #24a19c
+        .bill-card-content
+            flex: 1
+            display: flex
+            flex-direction: column
+            justify-content: space-between
+            a:hover
+                text-decoration: none
+                color: #24a19c
         .view-all-container
             width: 75px
             height: 100px
@@ -650,6 +729,20 @@ button:focus
                 font-size: 12px
     img
         border-radius: 5px 0px 0px 5px
+
+.history-card
+    overflow-y: auto
+    img
+        border-radius: 5px 0px 0px 5px
+    .history-title
+        font-size: 18px
+    .history-profile
+        img
+            border-radius: 50%
+    .history-loader
+        visibility: hidden
+    .history-loader-active
+        visibility: visible
 
 .text-date
     position: absolute

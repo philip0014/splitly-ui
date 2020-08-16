@@ -38,7 +38,7 @@ export default {
             {id: 1, title: 'Bills', icon: 'mdi-credit-card'},
             {id: 2, title: 'Friends', icon: 'mdi-account-multiple'},
             {id: 3, title: 'Profile', icon: 'mdi-account'},
-            {id: 4, title: 'Sign Out', icon: 'mdi-logout'}
+            {id: 4, title: 'Sign Out', icon: 'mdi-logout-variant'}
         ],
     }),
     methods: {
