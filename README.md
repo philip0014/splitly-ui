@@ -1,6 +1,5 @@
 # Splitly UI
-
-Splitly is a web application which may help you to split the bills you and your friends have
+Splitly is a simple web application for tracking shared expenses with your friends, family, and many more. Make sure everyone gets their money back.
 
 ## Pages
 #### Sign In
@@ -47,8 +46,8 @@ Splitly is a web application which may help you to split the bills you and your 
 ## Image References
 <ul>
 	<li><a href="https://dribbble.com/shots/2246883-Collection-list-is-empty">Bill is empty </a></li>
-    <li><a href="https://blog.daftcode.pl/how-to-save-your-users-from-getting-lost-in-the-empty-state-b9a771703296">Friend is empty </a></li>
-    <li><a href='https://www.freepik.com/vectors/people'>People vector created by freepik - www.freepik.com</a></li>
+	<li><a href="https://blog.daftcode.pl/how-to-save-your-users-from-getting-lost-in-the-empty-state-b9a771703296">Friend is empty </a></li>
+	<li><a href='https://www.freepik.com/vectors/people'>People vector created by freepik - www.freepik.com</a></li>
 </ul>
 
 ## License
