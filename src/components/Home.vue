@@ -166,6 +166,7 @@ export default {
 .home-container
     height: 100%
     overflow: hidden
+    background-color: #fafafa
     .home-content
         height: 100%
         .nav-container

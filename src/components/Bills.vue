@@ -756,12 +756,12 @@ button:focus
             .view-all-content
                 font-size: 12px
     img
-        border-radius: 5px 0px 0px 5px
+        border-radius: 4px 0px 0px 4px
 
 .history-card
     overflow-y: auto
     img
-        border-radius: 5px 0px 0px 5px
+        border-radius: 4px 0px 0px 4px
     .history-title
         font-size: 18px
     .history-profile
