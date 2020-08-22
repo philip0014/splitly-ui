@@ -1,4 +1,16 @@
-# Splitly UI
+<h1 align="center">
+	Splitly
+</h1>
+<p align="center">
+	<a href="https://github.com/vuejs/vue">
+		<img src="https://img.shields.io/badge/Vue-v2.6.11-blue">
+	</a>
+	<a href="https://opensource.org/licenses/MIT">
+		<img src="https://img.shields.io/badge/License-MIT-green">
+	</a>
+</p>
+
+## About Splity
 Splitly is a simple web application for tracking shared expenses with your friends, family, and many more. Make sure everyone gets their money back.
 
 ## Pages
@@ -26,6 +38,14 @@ Splitly is a simple web application for tracking shared expenses with your frien
 <p align="center">
 	<img src="assets/profile.png" width="500">
 </p>
+
+## Features
+<ul>
+	<li>Authentication & Google sign in</li>
+	<li>Create and split bill</li>
+	<li>Add new friend</li>
+	<li>Profile customization</li>
+</ul>
 
 ## Color Palette
 <table>
