@@ -42,7 +42,7 @@ Splitly is a simple web application for tracking shared expenses with your frien
 ## Features
 <ul>
 	<li>Authentication & Google sign in</li>
-	<li>Create and split bill</li>
+	<li>Create & split bill</li>
 	<li>Add new friend</li>
 	<li>Profile customization</li>
 </ul>
