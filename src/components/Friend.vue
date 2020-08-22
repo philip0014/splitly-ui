@@ -104,12 +104,16 @@
                                                 <img :src="request.from.profileUrl" :alt="request.from.username" width="50" height="50">
                                             </div>
                                             <div class="text-center mt-2">{{ request.from.username }}</div>
-                                            <div class="request-action d-flex justify-space-between mt-2 pl-6 pr-6">
+                                            <div class="request-action d-flex justify-space-between mt-3 pl-6 pr-6">
                                                 <v-btn fab x-small color="error"
+                                                    width="25"
+                                                    height="25"
                                                     @click="rejectRequest(request)">
                                                     <v-icon>mdi-close</v-icon>
                                                 </v-btn>
                                                 <v-btn fab x-small color="primary"
+                                                    width="25"
+                                                    height="25"
                                                     @click="acceptRequest(request)">
                                                     <v-icon>mdi-check</v-icon>
                                                 </v-btn>
@@ -357,7 +361,7 @@ button:focus
     .swiper-container
         width: 100%
     .swiper-item
-        width: 150px
+        width: 125px
     img
         border-radius: 4px 0px 0px 4px
 </style>
