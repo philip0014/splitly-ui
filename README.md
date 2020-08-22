@@ -1,24 +1,12 @@
-# splitly-ui
+# Splitly UI
 
-## Project setup
-```
-npm install
-```
+Splitly is a web application which may help you to split the bills you and your friends have
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Screenshots
+<p style="text-align:center">
+	<img src="screenshots/register.png">
+    <img src="screenshots/sign_in.png">
+    <img src="screenshots/bills.png">
+    <img src="screenshots/friends.png">
+    <img src="screenshots/profile.png">
+</p>
