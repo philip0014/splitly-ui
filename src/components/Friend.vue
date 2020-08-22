@@ -5,7 +5,7 @@
             v-model="searchFriendDialog" max-width="400px">
             <template v-slot:activator="{ on, attrs }">
                 <div
-                    v-if="friends.totalSize === 0 && friendRequests.length === 0"
+                    v-if="friends.length === 0 && friendRequests.length === 0"
                     class="empty-friend-container d-flex justify-center align-center">
                     <img src="../assets/empty-friend.png" alt="">
                     <div class="mt-4 text--text">
@@ -83,57 +83,93 @@
             </v-card>
         </v-dialog>
         <div class="friend-request-container mt-4">
-            <div>
+            <div
+                v-if="friendRequestReceived.length != 0">
                 <div class="content-title">
                     Request received
                 </div>
-                <hr>
+                <hr class="mt-2">
                 <div class="request-content d-flex">
-                    <v-card
-                        class="mr-6"
-                        v-for="request in friendRequestReceived"
-                        :key="request.id"
-                        width="125"
-                        height="150">
-                            <div class="pt-4">
-                                <div class="request-profile text-center">
-                                    <img :src="request.from.profileUrl" :alt="request.from.username" width="50" height="50">
-                                </div>
-                                <div class="text-center mt-1">{{ request.from.username }}</div>
-                                <div class="request-action d-flex justify-space-between mt-4 pl-6 pr-6">
-                                    <v-icon
-                                        size="30"
-                                        class="action-reject error--text"
-                                        @click="rejectRequest(request)">mdi-close-circle</v-icon>
-                                    <v-icon
-                                        size="30"
-                                        class="action-accept primary--text"
-                                        @click="acceptRequest(request)">mdi-check-circle</v-icon>
-                                </div>
-                            </div>
-                    </v-card>
+                    <swiper class="swiper" :options="swiperOption">
+                        <swiper-slide
+                            class="swiper-item pr-1 pb-1"
+                            v-for="request in friendRequestReceived"
+                            :key="request.id">
+                                <v-card
+                                    class="mr-6 mb-6"
+                                    width="125"
+                                    height="150">
+                                        <div class="pt-4">
+                                            <div class="request-profile text-center">
+                                                <img :src="request.from.profileUrl" :alt="request.from.username" width="50" height="50">
+                                            </div>
+                                            <div class="text-center mt-2">{{ request.from.username }}</div>
+                                            <div class="request-action d-flex justify-space-between mt-2 pl-6 pr-6">
+                                                <v-btn fab x-small color="error"
+                                                    @click="rejectRequest(request)">
+                                                    <v-icon>mdi-close</v-icon>
+                                                </v-btn>
+                                                <v-btn fab x-small color="primary"
+                                                    @click="acceptRequest(request)">
+                                                    <v-icon>mdi-check</v-icon>
+                                                </v-btn>
+                                            </div>
+                                        </div>
+                                </v-card>
+                        </swiper-slide>
+                    </swiper>
                 </div>
             </div>
-            <div class="mt-4">
+            <div
+                v-if="friends.length != 0"
+                class="mt-4">
+                <div class="content-title">
+                    Friends
+                </div>
+                <hr class="mt-2">
+                <div class="request-content">
+                    <div class="d-flex flex-wrap">
+                        <v-card
+                            class="mr-6 mb-6"
+                            v-for="friend in friends"
+                            :key="friend.id"
+                            width="150"
+                            height="50">
+                            <div class="d-flex align-center">
+                                <img :src="friend.profileUrl" :alt="friend.username" width="50" height="50">
+                                <div class="pl-2">{{ friend.username }}</div>
+                            </div>
+                        </v-card>
+                    </div>
+                </div>
+            </div>
+            <div
+                v-if="friendRequestSent.length != 0"
+                class="mt-4">
                 <div class="content-title">
                     Request sent
                 </div>
-                <hr>
+                <hr class="mt-2">
                 <div class="request-content d-flex">
-                    <v-card
-                        class="mr-6"
-                        v-for="request in friendRequestSent"
-                        :key="request.id"
-                        width="125"
-                        height="150">
-                            <div class="pt-4">
-                                <div class="request-profile text-center">
-                                    <img :src="request.to.profileUrl" :alt="request.to.username" width="50" height="50">
-                                </div>
-                                <div class="text-center mt-1">{{ request.to.username }}</div>
-                                <div class="request-description text-center text--text mt-2 pl-2 pr-2">Waiting for approval</div>
-                            </div>
-                    </v-card>
+                    <swiper class="swiper" :options="swiperOption">
+                        <swiper-slide
+                            class="swiper-item pr-1 pb-1"
+                            v-for="request in friendRequestSent"
+                            :key="request.id">
+                                <v-card
+                                    class="mr-6 mb-6"
+                                    width="125"
+                                    height="150">
+                                        <div class="pt-4">
+                                            <div class="request-profile text-center">
+                                                <img :src="request.to.profileUrl" :alt="request.to.username" width="50" height="50">
+                                            </div>
+                                            <div class="text-center mt-1">{{ request.to.username }}</div>
+                                            <div class="request-description text-center text--text mt-2 pl-2 pr-2">Waiting for approval</div>
+                                        </div>
+                                </v-card>
+                        </swiper-slide>
+                    </swiper>
                 </div>
             </div>
         </div>
@@ -154,7 +190,11 @@ export default {
         friendRequestSent: [],
         userSearchKeyword: '',
         userSearchResult: [],
-        tab: null
+        swiperOption: {
+            slidesPerView: 'auto',
+            spaceBetween: 30,
+            freeMode: true
+        }
     }),
     methods: {
         onSearchClose: function () {
@@ -263,12 +303,6 @@ export default {
                 this.friendRequestReceived.push(this.friendRequests[i])
             }
         }
-
-        console.log(this.friends)
-        console.log(this.friendRequests)
-        console.log(this.friendRequestMapping)
-        console.log(this.friendRequestSent)
-        console.log(this.friendRequestReceived)
     }
 }
 </script>
@@ -318,4 +352,12 @@ button:focus
         cursor: pointer
     .request-description
         font-size: 12px
+
+.request-content
+    .swiper-container
+        width: 100%
+    .swiper-item
+        width: 150px
+    img
+        border-radius: 4px 0px 0px 4px
 </style>
