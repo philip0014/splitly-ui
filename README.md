@@ -2,45 +2,44 @@
 
 Splitly is a web application which may help you to split the bills you and your friends have
 
-## Screenshots
+## Pages
 #### Sign In
 <p align="center">
-	<img src="screenshots/sign_in.png" width="500">
+	<img src="assets/sign_in.png" width="500">
 </p>
 
 #### Register
 <p align="center">
-	<img src="screenshots/register.png" width="500">
+	<img src="assets/register.png" width="500">
 </p>
 
 #### Home - Bills
 <p align="center">
-	<img src="screenshots/bills.png" width="500">
+	<img src="assets/bills.png" width="500">
 </p>
 
 #### Home - Friends
 <p align="center">
-	<img src="screenshots/friends.png" width="500">
+	<img src="assets/friends.png" width="500">
 </p>
 
 #### Home - Profile
 <p align="center">
-	<img src="screenshots/profile.png" width="500">
+	<img src="assets/profile.png" width="500">
 </p>
-
 
 ## Color Palette
 <table>
 <tr>
-<td><div style="background-color:#24a19c; width: 10px; height:10px;"></div></td>
+<td><img src="assets/primary.png"></td>
 <td>#24a19c</td>
 </tr>
 <tr>
-<td><div style="background-color:#6ebfb5; width: 10px; height:10px;"></div></td>
+<td><img src="assets/secondary.png"></td>
 <td>#6ebfb5</td>
 </tr>
 <tr>
-<td><div style="background-color:#ff5f40; width: 10px; height:10px;"></div></td>
+<td><img src="assets/error.png"></td>
 <td>#ff5f40</td>
 </tr>
 </table>
@@ -48,8 +47,8 @@ Splitly is a web application which may help you to split the bills you and your 
 ## Image References
 <ul>
 	<li><a href="https://dribbble.com/shots/2246883-Collection-list-is-empty">Bill is empty </a></li>
- 	<li><a href="https://blog.daftcode.pl/how-to-save-your-users-from-getting-lost-in-the-empty-state-b9a771703296">Friend is empty </a></li>
-	<li><a href='https://www.freepik.com/vectors/people'>People vector created by freepik - www.freepik.com</a></li>
+    <li><a href="https://blog.daftcode.pl/how-to-save-your-users-from-getting-lost-in-the-empty-state-b9a771703296">Friend is empty </a></li>
+    <li><a href='https://www.freepik.com/vectors/people'>People vector created by freepik - www.freepik.com</a></li>
 </ul>
 
 ## License
