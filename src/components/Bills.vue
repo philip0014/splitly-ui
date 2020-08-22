@@ -289,7 +289,7 @@
                         <v-card-title>
                             <span class="headline">Bill history</span>
                         </v-card-title>
-                        <v-row no-gutters class="pl-6 pr-6">
+                        <v-row no-gutters class="pl-6 pr-6 pb-6">
                             <v-col cols="12">
                                 <div>
                                     <v-card
@@ -406,6 +406,7 @@ export default {
         completeBillDialog: false,
         completeBillDialogObj: {},
         completeBillDialogData: [],
+        completePage: 1,
         isCompleteBillLoading: false,
         profile: {},
         swiperOption: {
@@ -608,10 +609,51 @@ export default {
         },
         onCompleteDialogScroll: function () {
             let obj = this.completeBillDialogObj
-            if(obj.scrollTop === (obj.scrollHeight - obj.offsetHeight)) {
+            if(!this.isCompleteBillLoading && this.completePage < this.completeBills.totalPage && obj.scrollTop === (obj.scrollHeight - obj.offsetHeight)) {
                 console.log('buttom')
                 this.isCompleteBillLoading = true
+
+                const headers = {
+                    'Authorization': 'Bearer ' + this.accessToken
+                }
+
+                const callback = (function (response) {
+                    console.log(response)
+                    response.data.forEach(bill => {
+                        let currBill = this.toSimpleBill(bill)
+                        this.completeBillDialogData.push(currBill)
+                    })
+                    this.completePage += 1
+                    this.isCompleteBillLoading = false
+                }).bind(this)
+
+                const fallback = (function (error) {
+                    console.log(error)
+                }).bind(this)
+                
+                apiHelper.get('/api/bill/complete?size=4&page=' + this.completePage, headers, callback, fallback)
             }
+        },
+        toSimpleBill: function (bill) {
+            let dateFormatter = new Intl.DateTimeFormat('en-us', {
+                month: 'short',
+                day: '2-digit'
+            });
+            let currBill = {
+                id: bill.id,
+                createdAt: dateFormatter.format(new Date(bill.createdAt)),
+                description: bill.description,
+                currency: bill.currency,
+                nominalNeeded: bill.nominalNeeded
+            }
+            if (bill.giver.id == this.profile.id) {
+                currBill.isMyBill = true
+                currBill.user = bill.receiver
+            } else {
+                currBill.isMyBill = false
+                currBill.user = bill.giver
+            }
+            return currBill
         }
     },
     mounted: function () {
@@ -636,21 +678,7 @@ export default {
         });
         
         this.completeBills.data.forEach(bill => {
-            let currBill = {
-                id: bill.id,
-                createdAt: dateFormatter.format(new Date(bill.createdAt)),
-                description: bill.description,
-                currency: bill.currency,
-                nominalNeeded: bill.nominalNeeded
-            }
-            if (bill.giver.id == this.profile.id) {
-                currBill.isMyBill = true
-                currBill.user = bill.receiver
-            } else {
-                currBill.isMyBill = false
-                currBill.user = bill.giver
-            }
-
+            let currBill = this.toSimpleBill(bill)
             this.historyBills.push(currBill)
             this.completeBillDialogData.push(currBill)
         });
@@ -740,9 +768,9 @@ button:focus
         img
             border-radius: 50%
     .history-loader
-        visibility: hidden
+        display: none
     .history-loader-active
-        visibility: visible
+        display: block
 
 .text-date
     position: absolute
